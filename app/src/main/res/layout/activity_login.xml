@@ -25,6 +25,15 @@
             android:text="@string/explicacion"
             android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/aviso_cifrado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="@string/sin_cifrado"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/formulario"
             android:layout_width="match_parent"

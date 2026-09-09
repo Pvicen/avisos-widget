@@ -21,6 +21,11 @@
     <string name="sesion_iniciada_como">Sesión iniciada como %1$s</string>
     <string name="faltan_datos">Escribe tu correo y tu contraseña.</string>
     <string name="error_generico">No se pudo entrar.</string>
+    <string name="cerrando">Cerrando sesión…</string>
+    <string name="sin_navegador">No se encontró una app para abrir la página de avisos.</string>
+    <string name="sin_cifrado">⚠️ Este dispositivo no permitió usar su almacén seguro, así que la sesión se guarda sin cifrar en la carpeta privada de la app.</string>
+    <string name="widget_sin_datos">Aún sin datos</string>
+    <string name="widget_cargando">…</string>
 
     <string name="como_agregar">Para poner el widget: mantén presionada la pantalla de inicio, entra a Widgets, busca “Avisos” y arrástralo donde quieras. Se actualiza solo cada media hora y con el botón ↻ del widget.</string>
 </resources>

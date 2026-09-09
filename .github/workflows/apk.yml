@@ -34,6 +34,10 @@ jobs:
             openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
               -pass env:CLAVE -in firma/avisos.jks.enc -out "$RUNNER_TEMP/avisos.jks"
             echo "KEYSTORE_FILE=$RUNNER_TEMP/avisos.jks" >> "$GITHUB_ENV"
+          elif [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            echo "No hay llave de firma: el APK no se puede publicar." >&2
+            echo "Ejecuta el workflow 'Crear keystore de firma' y reintenta." >&2
+            exit 1
           else
             echo "Sin llave de firma: se compila para revisar, pero no se publica."
           fi

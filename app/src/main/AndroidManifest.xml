@@ -21,6 +21,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AbrirActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
         <receiver
             android:name=".AvisosWidget"
             android:exported="false">

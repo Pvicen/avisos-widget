@@ -41,10 +41,18 @@ class LoginActivity : Activity() {
         }
 
         findViewById<Button>(R.id.salir).setOnClickListener {
-            Sesion.limpiar(this)
-            AvisosWidget.refrescar(this)
-            mensaje.text = getString(R.string.sesion_cerrada)
-            pintarEstado()
+            mensaje.text = getString(R.string.cerrando)
+            Thread {
+                // Aviso al servidor para que el token deje de servir; si no hay red,
+                // se borra igual la sesión de este dispositivo.
+                Api.cerrarSesionEnServidor(this@LoginActivity)
+                runOnUiThread {
+                    Sesion.limpiar(this@LoginActivity)
+                    AvisosWidget.refrescar(this@LoginActivity)
+                    mensaje.text = getString(R.string.sesion_cerrada)
+                    pintarEstado()
+                }
+            }.start()
         }
     }
 
@@ -54,6 +62,9 @@ class LoginActivity : Activity() {
     }
 
     private fun pintarEstado() {
+        findViewById<View>(R.id.aviso_cifrado).visibility =
+            if (Sesion.cifrado(this)) View.GONE else View.VISIBLE
+
         val hay = Sesion.hay(this)
         formulario.visibility = if (hay) View.GONE else View.VISIBLE
         conSesion.visibility = if (hay) View.VISIBLE else View.GONE

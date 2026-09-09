@@ -3,6 +3,7 @@ build/
 local.properties
 *.jks
 *.keystore
+firma/clave-de-firma.txt
 !firma/*.enc
 .idea/
 *.iml

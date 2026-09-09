@@ -54,17 +54,31 @@ object Api {
     }
 
     fun iniciarSesion(contexto: Context, correo: String, clave: String) {
+        val generacion = Sesion.generacion()
         val cuerpo = JSONObject().put("email", correo).put("password", clave).toString()
         val (codigo, respuesta) = ejecutar(
             abrir("${Config.SUPABASE_URL}/auth/v1/token?grant_type=password", "POST"),
             cuerpo
         )
         if (codigo == 400) throw ErrorSesion("Correo o contraseña incorrectos.")
+        if (codigo == 429) throw ErrorRed("Demasiados intentos. Espera un momento.")
         if (codigo !in 200..299) throw ErrorRed("El servidor respondió $codigo")
-        guardarRespuesta(contexto, respuesta)
+        guardarRespuesta(contexto, respuesta, generacion)
     }
 
-    private fun guardarRespuesta(contexto: Context, respuesta: String) {
+    /** Cierra la sesión también en el servidor. Si falla, no pasa nada grave. */
+    fun cerrarSesionEnServidor(contexto: Context) {
+        val acceso = Sesion.acceso(contexto) ?: return
+        try {
+            val conexion = abrir("${Config.SUPABASE_URL}/auth/v1/logout?scope=local", "POST")
+            conexion.setRequestProperty("Authorization", "Bearer $acceso")
+            ejecutar(conexion, "{}")
+        } catch (e: Exception) {
+            // Sin red o token ya vencido: la sesión local se borra igual.
+        }
+    }
+
+    private fun guardarRespuesta(contexto: Context, respuesta: String, generacion: Int) {
         val datos = try {
             JSONObject(respuesta)
         } catch (e: Exception) {
@@ -74,7 +88,20 @@ object Api {
         val refresco = datos.optString("refresh_token")
         if (acceso.isBlank() || refresco.isBlank()) throw ErrorSesion("El servidor no entregó una sesión")
         val correo = datos.optJSONObject("user")?.optString("email")
-        Sesion.guardarTokens(contexto, acceso, refresco, datos.optLong("expires_in", 3600L), correo)
+        val guardado = Sesion.guardarTokens(
+            contexto, acceso, refresco, datos.optLong("expires_in", 3600L), correo, generacion
+        )
+        if (!guardado) throw ErrorSesion("La sesión se cerró mientras se renovaba")
+    }
+
+    /** Distingue "el refresco ya no sirve" de "el servidor tuvo un problema". */
+    private fun refrescoInvalido(codigo: Int, respuesta: String): Boolean {
+        if (codigo != 400 && codigo != 401) return false
+        val texto = respuesta.lowercase()
+        return texto.contains("invalid_grant") ||
+            texto.contains("refresh_token_not_found") ||
+            texto.contains("refresh_token_already_used") ||
+            texto.contains("invalid refresh token")
     }
 
     /** Devuelve un token de acceso vigente, renovándolo si hace falta. */
@@ -88,13 +115,18 @@ object Api {
             return acceso
         }
 
+        val generacion = Sesion.generacion()
         val (codigo, respuesta) = ejecutar(
             abrir("${Config.SUPABASE_URL}/auth/v1/token?grant_type=refresh_token", "POST"),
             JSONObject().put("refresh_token", refresco).toString()
         )
-        if (codigo in 400..499) throw ErrorSesion("La sesión caducó. Vuelve a iniciar sesión.")
+        // Solo se da la sesión por perdida si el servidor dice que el refresco no
+        // sirve; un 429 o un 5xx son problemas pasajeros y se reintentan.
+        if (refrescoInvalido(codigo, respuesta)) {
+            throw ErrorSesion("La sesión caducó. Vuelve a iniciar sesión.")
+        }
         if (codigo !in 200..299) throw ErrorRed("El servidor respondió $codigo")
-        guardarRespuesta(contexto, respuesta)
+        guardarRespuesta(contexto, respuesta, generacion)
         return Sesion.acceso(contexto) ?: throw ErrorSesion("No se pudo renovar la sesión")
     }
 

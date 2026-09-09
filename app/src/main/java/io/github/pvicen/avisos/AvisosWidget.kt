@@ -76,36 +76,21 @@ class AvisosWidget : AppWidgetProvider() {
                 )
             )
 
-            // Tocar el widget abre la app (o el inicio de sesión si falta)
-            val abrir = if (haySesion) {
-                Intent(Intent.ACTION_VIEW, Uri.parse(Config.APP_URL))
-            } else {
-                Intent(context, LoginActivity::class.java)
-            }
+            // Tocar el widget abre la app (o el inicio de sesión si falta). El destino
+            // lo decide AbrirActivity al recibir el toque: el intent tiene que ser
+            // EXPLÍCITO, porque Android 14+ rechaza los implícitos en estos casos.
+            val abrir = Intent(context, AbrirActivity::class.java)
             abrir.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val alTocar = PendingIntent.getActivity(
+                context, 1, abrir,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
-            vistas.setOnClickPendingIntent(
-                R.id.cabecera,
-                PendingIntent.getActivity(
-                    context, 1, abrir,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
-            vistas.setOnClickPendingIntent(
-                R.id.vacio,
-                PendingIntent.getActivity(
-                    context, 2, abrir,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
-            // La plantilla de la lista tiene que ser mutable: cada fila la completa
-            vistas.setPendingIntentTemplate(
-                R.id.lista,
-                PendingIntent.getActivity(
-                    context, 3, abrir,
-                    PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-            )
+            vistas.setOnClickPendingIntent(R.id.cabecera, alTocar)
+            vistas.setOnClickPendingIntent(R.id.vacio, alTocar)
+            // Las filas no rellenan datos propios, así que la plantilla puede ser
+            // inmutable: el toque lanza el intent base tal cual.
+            vistas.setPendingIntentTemplate(R.id.lista, alTocar)
 
             manager.updateAppWidget(id, vistas)
         }

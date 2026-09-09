@@ -17,8 +17,11 @@ android {
         applicationId = "io.github.pvicen.avisos"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // Cada compilación en GitHub Actions sube el número, así que una versión
+        // nueva siempre se instala encima de la anterior.
+        val compilacion = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+        versionCode = compilacion
+        versionName = "1.0.$compilacion"
     }
 
     signingConfigs {
