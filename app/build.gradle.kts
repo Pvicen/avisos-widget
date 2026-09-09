@@ -22,9 +22,10 @@ android {
     }
 
     signingConfigs {
-        if (rutaKeystore != null) {
+        val ruta = rutaKeystore
+        if (ruta != null) {
             create("publicacion") {
-                storeFile = File(rutaKeystore)
+                storeFile = File(ruta)
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS") ?: "avisos"
                 keyPassword = System.getenv("KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD")
