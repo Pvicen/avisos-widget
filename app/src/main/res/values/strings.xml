@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Avisos Widget</string>
+    <string name="widget_titulo">📌 Avisos</string>
+    <string name="widget_desc">Tus pendientes en la pantalla de inicio</string>
+    <string name="refrescar">Actualizar ahora</string>
+    <string name="bandera">⚑</string>
+
+    <string name="explicacion">Esta app solo mantiene la sesión que usa el widget. Inicia sesión con la misma cuenta de tu app de avisos.</string>
+    <string name="correo">Correo</string>
+    <string name="clave">Contraseña</string>
+    <string name="entrar">Entrar</string>
+    <string name="actualizar">Actualizar el widget ahora</string>
+    <string name="salir">Cerrar sesión</string>
+
+    <string name="entrando">Entrando…</string>
+    <string name="listo">Listo. Ya puedes agregar el widget.</string>
+    <string name="actualizando">Actualizando el widget…</string>
+    <string name="sesion_cerrada">Sesión cerrada en este dispositivo.</string>
+    <string name="sesion_iniciada">Sesión iniciada.</string>
+    <string name="sesion_iniciada_como">Sesión iniciada como %1$s</string>
+    <string name="faltan_datos">Escribe tu correo y tu contraseña.</string>
+    <string name="error_generico">No se pudo entrar.</string>
+
+    <string name="como_agregar">Para poner el widget: mantén presionada la pantalla de inicio, entra a Widgets, busca “Avisos” y arrástralo donde quieras. Se actualiza solo cada media hora y con el botón ↻ del widget.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fondo_widget">#F21F2226</color>
+    <color name="texto">#E8EAED</color>
+    <color name="suave">#9AA0A6</color>
+    <color name="rojo">#E57368</color>
+    <color name="ambar">#F0A24B</color>
+    <color name="azul">#5B8DEF</color>
+</resources>
