@@ -29,6 +29,15 @@
             android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+        <activity
+            android:name=".NuevoAvisoActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/nuevo_aviso"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/TemaDialogo" />
+
         <receiver
             android:name=".AvisosWidget"
             android:exported="false">

@@ -30,6 +30,11 @@ class AvisosWidget : AppWidgetProvider() {
     companion object {
         const val ACCION_REFRESCAR = "io.github.pvicen.avisos.REFRESCAR"
 
+        /** Extras que cada fila añade a la plantilla al tocarla. */
+        const val EXTRA_ACCION = "accion"
+        const val EXTRA_ID = "id"
+        const val ACCION_COMPLETAR = "completar"
+
         /** Repinta el encabezado y pide a la lista que relea la copia local. */
         fun refrescar(context: Context) {
             val manager = AppWidgetManager.getInstance(context)
@@ -76,21 +81,39 @@ class AvisosWidget : AppWidgetProvider() {
                 )
             )
 
+            // Botón de agregar un aviso nuevo
+            vistas.setOnClickPendingIntent(
+                R.id.agregar,
+                PendingIntent.getActivity(
+                    context, 4,
+                    Intent(context, NuevoAvisoActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+
             // Tocar el widget abre la app (o el inicio de sesión si falta). El destino
             // lo decide AbrirActivity al recibir el toque: el intent tiene que ser
             // EXPLÍCITO, porque Android 14+ rechaza los implícitos en estos casos.
             val abrir = Intent(context, AbrirActivity::class.java)
             abrir.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
             val alTocar = PendingIntent.getActivity(
                 context, 1, abrir,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-
             vistas.setOnClickPendingIntent(R.id.cabecera, alTocar)
             vistas.setOnClickPendingIntent(R.id.vacio, alTocar)
-            // Las filas no rellenan datos propios, así que la plantilla puede ser
-            // inmutable: el toque lanza el intent base tal cual.
-            vistas.setPendingIntentTemplate(R.id.lista, alTocar)
+
+            // La plantilla de las filas sí es mutable: cada fila le añade su acción
+            // y su id. Es válido porque el intent apunta a un componente propio.
+            vistas.setPendingIntentTemplate(
+                R.id.lista,
+                PendingIntent.getActivity(
+                    context, 3, abrir,
+                    PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
 
             manager.updateAppWidget(id, vistas)
         }

@@ -4,8 +4,15 @@ Widget de Android que muestra los pendientes de la app
 [app-avisos](https://github.com/Pvicen/app-avisos) directamente en la pantalla de inicio:
 texto, notas, prioridades (⚑) y fechas de vencimiento, con botón de actualizar.
 
-Al tocarlo se abre la app de avisos. El widget es **solo lectura**: para agregar, editar
-o completar avisos se usa la app.
+Desde el propio widget se puede:
+
+- **Marcar un aviso como hecho** tocando el círculo de su izquierda (desaparece al
+  instante y pasa al historial de la app).
+- **Agregar un aviso** con el botón **+**, que abre una ventanita para escribirlo sin
+  salir de la pantalla de inicio.
+
+Tocar el texto de un aviso, o el título del widget, abre la app de avisos. Para editar,
+poner notas, prioridades o fechas se sigue usando la app.
 
 ## Instalar
 

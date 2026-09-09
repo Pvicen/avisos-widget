@@ -29,5 +29,17 @@
     <string name="widget_sin_datos">Aún sin datos</string>
     <string name="widget_cargando">…</string>
 
+    <string name="agregar_aviso">Agregar un aviso</string>
+    <string name="marcar_hecho">Marcar como hecho</string>
+    <string name="hecho">Hecho ✓</string>
+    <string name="nuevo_aviso">Nuevo aviso</string>
+    <string name="que_hay_que_hacer">¿Qué hay que hacer?</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="agregar">Agregar</string>
+    <string name="escribe_algo">Escribe el aviso.</string>
+    <string name="guardando">Guardando…</string>
+    <string name="aviso_agregado">Aviso agregado ✓</string>
+    <string name="error_agregar">No se pudo guardar el aviso.</string>
+
     <string name="como_agregar">Para poner el widget: mantén presionada la pantalla de inicio, entra a Widgets, busca “Avisos” y arrástralo donde quieras. Se actualiza solo cada media hora y con el botón ↻ del widget.</string>
 </resources>

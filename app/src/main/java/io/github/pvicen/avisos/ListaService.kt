@@ -58,6 +58,11 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
             vistas.setTextColor(R.id.vence, ContextCompat.getColor(contexto, color))
         }
 
+        // Tocar el círculo marca el aviso como hecho; tocar el resto abre la app.
+        val completar = Intent()
+        completar.putExtra(AvisosWidget.EXTRA_ACCION, AvisosWidget.ACCION_COMPLETAR)
+        completar.putExtra(AvisosWidget.EXTRA_ID, aviso.id)
+        vistas.setOnClickFillInIntent(R.id.check, completar)
         vistas.setOnClickFillInIntent(R.id.fila, Intent())
         return vistas
     }
