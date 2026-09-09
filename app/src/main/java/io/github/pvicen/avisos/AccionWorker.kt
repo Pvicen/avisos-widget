@@ -2,6 +2,8 @@ package io.github.pvicen.avisos
 
 import android.content.Context
 import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
@@ -22,7 +24,7 @@ class AccionWorker(contexto: Context, parametros: WorkerParameters) :
             Api.completar(contexto, id)
         } catch (e: ErrorSesion) {
             Sesion.limpiar(contexto)
-            Cache.confirmar(contexto, id)
+            Cache.revertir(contexto, id)
             Cache.guardarError(contexto, "toca para entrar")
             AvisosWidget.refrescar(contexto)
             return Result.success()
@@ -32,14 +34,14 @@ class AccionWorker(contexto: Context, parametros: WorkerParameters) :
                 AvisosWidget.refrescar(contexto)
                 return Result.retry()
             }
-            // Se agotaron los intentos: que vuelva a aparecer en la lista.
-            Cache.confirmar(contexto, id)
-            Cache.guardarError(contexto, "sin conexión")
+            // Se agotaron los intentos: que el aviso vuelva a verse.
+            Cache.revertir(contexto, id)
+            Cache.guardarError(contexto, "no se pudo marcar")
             AvisosWidget.refrescar(contexto)
             return Result.success()
         }
 
-        Cache.confirmar(contexto, id)
+        Cache.completado(contexto, id)
         Actualizar.ahora(contexto)
         return Result.success()
     }
@@ -49,10 +51,17 @@ class AccionWorker(contexto: Context, parametros: WorkerParameters) :
         private const val MAX_INTENTOS = 5
 
         fun completar(contexto: Context, id: String) {
-            // Sin trabajo único: cada aviso marcado tiene que llegar por su cuenta.
+            // Con red obligatoria: sin señal el trabajo ESPERA (sobrevive incluso a
+            // reiniciar el teléfono) en vez de gastar los reintentos contra el vacío.
+            // Los intentos quedan para fallos reales del servidor.
             WorkManager.getInstance(contexto.applicationContext).enqueue(
                 OneTimeWorkRequestBuilder<AccionWorker>()
                     .setInputData(workDataOf(CLAVE_ID to id))
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build()
+                    )
                     .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 20, TimeUnit.SECONDS)
                     .build()
             )

@@ -8,9 +8,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import java.util.UUID
 
 /** Ventanita para escribir un aviso nuevo sin salir de la pantalla de inicio. */
 class NuevoAvisoActivity : Activity() {
+
+    private var enVuelo = false
+
+    /**
+     * El id se genera aquí y no en el servidor: si la petición se reintenta
+     * (por ejemplo tras un corte a mitad de camino), el segundo intento choca
+     * con el mismo id en vez de crear un aviso repetido.
+     */
+    private val idNuevo: String by lazy { UUID.randomUUID().toString() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +37,9 @@ class NuevoAvisoActivity : Activity() {
         val texto = findViewById<EditText>(R.id.texto_nuevo)
         val mensaje = findViewById<TextView>(R.id.mensaje_nuevo)
         val agregar = findViewById<Button>(R.id.boton_agregar)
+        val cancelar = findViewById<Button>(R.id.boton_cancelar)
 
-        findViewById<Button>(R.id.boton_cancelar).setOnClickListener { finish() }
+        cancelar.setOnClickListener { finish() }
 
         agregar.setOnClickListener {
             val contenido = texto.text.toString().trim()
@@ -36,21 +47,32 @@ class NuevoAvisoActivity : Activity() {
                 mensaje.text = getString(R.string.escribe_algo)
                 return@setOnClickListener
             }
+
+            // Mientras se guarda, la ventana no se cierra por accidente: ni con
+            // atrás, ni tocando fuera, ni con Cancelar.
+            enVuelo = true
+            setFinishOnTouchOutside(false)
             agregar.isEnabled = false
+            cancelar.isEnabled = false
             mensaje.text = getString(R.string.guardando)
 
             Thread {
                 var error: String? = null
                 try {
-                    Api.agregar(this@NuevoAvisoActivity, contenido)
+                    Api.agregar(this@NuevoAvisoActivity, idNuevo, contenido)
                     Actualizar.ahora(this@NuevoAvisoActivity)
                 } catch (e: Exception) {
                     error = e.message ?: getString(R.string.error_agregar)
                 }
+                val fallo = error
                 runOnUiThread {
-                    if (error != null) {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    enVuelo = false
+                    setFinishOnTouchOutside(true)
+                    cancelar.isEnabled = true
+                    if (fallo != null) {
                         agregar.isEnabled = true
-                        mensaje.text = error
+                        mensaje.text = fallo
                     } else {
                         Toast.makeText(
                             this@NuevoAvisoActivity,
@@ -61,6 +83,14 @@ class NuevoAvisoActivity : Activity() {
                     }
                 }
             }.start()
+        }
+    }
+
+    @Deprecated("Se mantiene para bloquear el gesto de atrás mientras se guarda")
+    override fun onBackPressed() {
+        if (!enVuelo) {
+            @Suppress("DEPRECATION")
+            super.onBackPressed()
         }
     }
 }

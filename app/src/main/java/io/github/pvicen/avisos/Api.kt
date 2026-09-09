@@ -198,16 +198,21 @@ object Api {
         // no es un error, el próximo refresco deja todo al día.
     }
 
-    /** Crea un aviso nuevo. */
-    fun agregar(contexto: Context, texto: String) {
+    /**
+     * Crea un aviso nuevo. El id viaja desde el cliente para que un reintento
+     * no cree dos avisos iguales: el segundo choca con el mismo id.
+     */
+    fun agregar(contexto: Context, id: String, texto: String) {
         val token = tokenValido(contexto)
         val (codigo, respuesta) = pedir(
             "${Config.SUPABASE_URL}/rest/v1/avisos",
             "POST",
-            JSONObject().put("texto", texto).toString(),
+            JSONObject().put("id", id).put("texto", texto).toString(),
             token,
             "return=representation"
         )
+        // 409 = ese id ya existe: el aviso se guardó en un intento anterior.
+        if (codigo == 409) return
         revisarRespuesta(codigo)
         val creados = try {
             JSONArray(respuesta).length()

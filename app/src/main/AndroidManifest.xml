@@ -31,6 +31,7 @@
 
         <activity
             android:name=".NuevoAvisoActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/nuevo_aviso"

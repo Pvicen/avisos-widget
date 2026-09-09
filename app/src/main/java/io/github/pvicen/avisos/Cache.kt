@@ -8,40 +8,37 @@ import org.json.JSONObject
  * Copia local de los avisos: el widget siempre pinta desde aquí, así que
  * sigue mostrando la última lista conocida aunque no haya red.
  *
- * Además lleva la cuenta de los avisos que se acaban de marcar como hechos
- * desde el widget: se ocultan al instante y se mantienen ocultos hasta que el
- * servidor confirma, para que no reaparezcan un segundo por una recarga.
+ * Los avisos marcados como hechos desde el widget no se borran de la lista:
+ * se anotan como "en camino" y se filtran al leer. Así desaparecen al instante,
+ * pero si el servidor nunca llega a confirmarlo vuelven a aparecer en vez de
+ * perderse.
  */
 object Cache {
     private const val LISTA = "lista"
     private const val ACTUALIZADO = "actualizado"
     private const val ERROR = "error"
-    private const val OCULTOS = "ocultos"
-    private const val VIDA_OCULTO = 5 * 60 * 1000L
+    private const val EN_CAMINO = "en_camino"
+
+    /** Red de seguridad: nada queda oculto para siempre. */
+    private const val VIDA_OCULTO = 24 * 60 * 60 * 1000L
 
     // ---------- Lista ----------
 
     fun guardarAvisos(contexto: Context, avisos: List<Aviso>) {
-        val ocultos = ocultosVigentes(contexto)
-        val arreglo = JSONArray()
-        for (aviso in avisos) {
-            if (ocultos.contains(aviso.id)) continue
-            val fila = JSONObject()
-            fila.put("id", aviso.id)
-            fila.put("texto", aviso.texto)
-            fila.put("prioridad", aviso.prioridad)
-            if (aviso.nota != null) fila.put("nota", aviso.nota)
-            if (aviso.vence != null) fila.put("vence", aviso.vence)
-            arreglo.put(fila)
-        }
         val editor = Sesion.prefs(contexto).edit()
-        editor.putString(LISTA, arreglo.toString())
+        editor.putString(LISTA, aJson(avisos))
         editor.putLong(ACTUALIZADO, System.currentTimeMillis())
         editor.remove(ERROR)
         editor.apply()
     }
 
+    /** La lista visible: sin los avisos que se están marcando como hechos. */
     fun leerAvisos(contexto: Context): List<Aviso> {
+        val enCamino = enCaminoVigentes(contexto)
+        return leerTodos(contexto).filter { !enCamino.contains(it.id) }
+    }
+
+    private fun leerTodos(contexto: Context): List<Aviso> {
         val texto = Sesion.prefs(contexto).getString(LISTA, null) ?: return emptyList()
         return try {
             val arreglo = JSONArray(texto)
@@ -64,17 +61,9 @@ object Cache {
         }
     }
 
-    // ---------- Marcados como hechos desde el widget ----------
-
-    /** Lo saca de la lista al instante y lo deja anotado como "en camino". */
-    @Synchronized
-    fun ocultar(contexto: Context, id: String) {
-        val ocultos = leerOcultos(contexto)
-        ocultos.put(id, System.currentTimeMillis())
-        val quedan = leerAvisos(contexto).filter { it.id != id }
-
+    private fun aJson(avisos: List<Aviso>): String {
         val arreglo = JSONArray()
-        for (aviso in quedan) {
+        for (aviso in avisos) {
             val fila = JSONObject()
             fila.put("id", aviso.id)
             fila.put("texto", aviso.texto)
@@ -83,22 +72,48 @@ object Cache {
             if (aviso.vence != null) fila.put("vence", aviso.vence)
             arreglo.put(fila)
         }
+        return arreglo.toString()
+    }
+
+    // ---------- Marcados como hechos desde el widget ----------
+
+    /**
+     * Lo esconde de la lista mientras viaja al servidor.
+     * Devuelve false si ya estaba en camino (toque repetido).
+     */
+    @Synchronized
+    fun ocultar(contexto: Context, id: String): Boolean {
+        val enCamino = leerEnCamino(contexto)
+        val ahora = System.currentTimeMillis()
+        val anterior = enCamino.optLong(id, 0L)
+        if (anterior != 0L && ahora - anterior < VIDA_OCULTO) return false
+
+        enCamino.put(id, ahora)
+        Sesion.prefs(contexto).edit().putString(EN_CAMINO, enCamino.toString()).apply()
+        return true
+    }
+
+    /** El servidor lo confirmó: fuera de la lista y de los pendientes. */
+    @Synchronized
+    fun completado(contexto: Context, id: String) {
+        val enCamino = leerEnCamino(contexto)
+        enCamino.remove(id)
         val editor = Sesion.prefs(contexto).edit()
-        editor.putString(LISTA, arreglo.toString())
-        editor.putString(OCULTOS, ocultos.toString())
+        editor.putString(LISTA, aJson(leerTodos(contexto).filter { it.id != id }))
+        editor.putString(EN_CAMINO, enCamino.toString())
         editor.apply()
     }
 
-    /** El servidor ya respondió (bien o mal): deja de ocultarlo. */
+    /** No se pudo completar: que vuelva a verse en la lista. */
     @Synchronized
-    fun confirmar(contexto: Context, id: String) {
-        val ocultos = leerOcultos(contexto)
-        ocultos.remove(id)
-        Sesion.prefs(contexto).edit().putString(OCULTOS, ocultos.toString()).apply()
+    fun revertir(contexto: Context, id: String) {
+        val enCamino = leerEnCamino(contexto)
+        enCamino.remove(id)
+        Sesion.prefs(contexto).edit().putString(EN_CAMINO, enCamino.toString()).apply()
     }
 
-    private fun leerOcultos(contexto: Context): JSONObject {
-        val texto = Sesion.prefs(contexto).getString(OCULTOS, null) ?: return JSONObject()
+    private fun leerEnCamino(contexto: Context): JSONObject {
+        val texto = Sesion.prefs(contexto).getString(EN_CAMINO, null) ?: return JSONObject()
         return try {
             JSONObject(texto)
         } catch (e: Exception) {
@@ -106,18 +121,19 @@ object Cache {
         }
     }
 
-    /** Ignora los que llevan demasiado tiempo ocultos: nada queda escondido para siempre. */
-    private fun ocultosVigentes(contexto: Context): Set<String> {
-        val ocultos = leerOcultos(contexto)
+    private fun enCaminoVigentes(contexto: Context): Set<String> {
+        val enCamino = leerEnCamino(contexto)
+        if (enCamino.length() == 0) return emptySet()
+
         val ahora = System.currentTimeMillis()
         val vigentes = HashSet<String>()
         val caducados = ArrayList<String>()
-        for (id in ocultos.keys()) {
-            if (ahora - ocultos.optLong(id, 0L) < VIDA_OCULTO) vigentes.add(id) else caducados.add(id)
+        for (id in enCamino.keys()) {
+            if (ahora - enCamino.optLong(id, 0L) < VIDA_OCULTO) vigentes.add(id) else caducados.add(id)
         }
         if (caducados.isNotEmpty()) {
-            for (id in caducados) ocultos.remove(id)
-            Sesion.prefs(contexto).edit().putString(OCULTOS, ocultos.toString()).apply()
+            for (id in caducados) enCamino.remove(id)
+            Sesion.prefs(contexto).edit().putString(EN_CAMINO, enCamino.toString()).apply()
         }
         return vigentes
     }

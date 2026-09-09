@@ -36,7 +36,8 @@ class AbrirActivity : Activity() {
             return
         }
         // Desaparece de la lista al instante; el servidor se entera enseguida.
-        Cache.ocultar(this, id)
+        // Si ya estaba en camino (toque repetido) no se hace nada dos veces.
+        if (!Cache.ocultar(this, id)) return
         AvisosWidget.refrescar(this)
         AccionWorker.completar(this, id)
         Toast.makeText(this, R.string.hecho, Toast.LENGTH_SHORT).show()
