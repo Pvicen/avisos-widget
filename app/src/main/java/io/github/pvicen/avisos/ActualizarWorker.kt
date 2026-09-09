@@ -14,29 +14,13 @@ class ActualizarWorker(contexto: Context, parametros: WorkerParameters) :
     Worker(contexto, parametros) {
 
     override fun doWork(): Result {
-        val contexto = applicationContext
-
-        if (!Sesion.hay(contexto)) {
-            Cache.guardarError(contexto, "toca para entrar")
-            AvisosWidget.refrescar(contexto)
-            return Result.success()
+        val resultado = Actualizar.ahora(applicationContext)
+        // Los fallos pasajeros se reintentan solos, con esperas crecientes.
+        return if (resultado.pasajero && runAttemptCount < MAX_INTENTOS) {
+            Result.retry()
+        } else {
+            Result.success()
         }
-
-        var reintentar = false
-        try {
-            Cache.guardarAvisos(contexto, Api.avisosPendientes(contexto))
-        } catch (e: ErrorSesion) {
-            Sesion.limpiar(contexto)
-            Cache.guardarError(contexto, "toca para entrar")
-        } catch (e: Exception) {
-            // Fallo pasajero (sin señal, servidor ocupado): se muestra el estado y
-            // WorkManager vuelve a intentarlo solo, con esperas crecientes.
-            Cache.guardarError(contexto, "sin conexión")
-            reintentar = runAttemptCount < MAX_INTENTOS
-        }
-
-        AvisosWidget.refrescar(contexto)
-        return if (reintentar) Result.retry() else Result.success()
     }
 
     companion object {

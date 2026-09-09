@@ -35,9 +35,23 @@ class LoginActivity : Activity() {
 
         entrar.setOnClickListener { iniciarSesion() }
 
-        findViewById<Button>(R.id.actualizar).setOnClickListener {
-            ActualizarWorker.encolar(this)
+        val botonActualizar = findViewById<Button>(R.id.actualizar)
+        botonActualizar.setOnClickListener {
+            botonActualizar.isEnabled = false
             mensaje.text = getString(R.string.actualizando)
+            Thread {
+                val resultado = Actualizar.ahora(this@LoginActivity)
+                val hayWidgets = Actualizar.hayWidgets(this@LoginActivity)
+                runOnUiThread {
+                    botonActualizar.isEnabled = true
+                    mensaje.text = when {
+                        resultado.error != null -> resultado.error
+                        hayWidgets -> getString(R.string.listo_con_widget, resultado.cantidad)
+                        else -> getString(R.string.listo_sin_widget, resultado.cantidad)
+                    }
+                    pintarEstado()
+                }
+            }.start()
         }
 
         findViewById<Button>(R.id.salir).setOnClickListener {

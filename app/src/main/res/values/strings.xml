@@ -15,7 +15,9 @@
 
     <string name="entrando">Entrando…</string>
     <string name="listo">Listo. Ya puedes agregar el widget.</string>
-    <string name="actualizando">Actualizando el widget…</string>
+    <string name="actualizando">Actualizando…</string>
+    <string name="listo_con_widget">Widget actualizado: %1$d pendientes.</string>
+    <string name="listo_sin_widget">Datos al día: %1$d pendientes. Todavía no has puesto el widget en la pantalla de inicio: mantén presionada la pantalla de inicio, entra a Widgets, busca “Avisos” y arrástralo.</string>
     <string name="sesion_cerrada">Sesión cerrada en este dispositivo.</string>
     <string name="sesion_iniciada">Sesión iniciada.</string>
     <string name="sesion_iniciada_como">Sesión iniciada como %1$s</string>
