@@ -18,6 +18,7 @@ object Cache {
     private const val ACTUALIZADO = "actualizado"
     private const val ERROR = "error"
     private const val EN_CAMINO = "en_camino"
+    private const val PERSONAS = "personas"
 
     /** Red de seguridad: nada queda oculto para siempre. */
     private const val VIDA_OCULTO = 24 * 60 * 60 * 1000L
@@ -51,7 +52,8 @@ object Cache {
                         texto = fila.optString("texto"),
                         nota = if (fila.isNull("nota")) null else fila.optString("nota"),
                         prioridad = fila.optBoolean("prioridad", false),
-                        vence = if (fila.isNull("vence")) null else fila.optString("vence")
+                        vence = if (fila.isNull("vence")) null else fila.optString("vence"),
+                        creadoPor = if (fila.isNull("creado_por")) null else fila.optString("creado_por")
                     )
                 )
             }
@@ -70,9 +72,33 @@ object Cache {
             fila.put("prioridad", aviso.prioridad)
             if (aviso.nota != null) fila.put("nota", aviso.nota)
             if (aviso.vence != null) fila.put("vence", aviso.vence)
+            if (aviso.creadoPor != null) fila.put("creado_por", aviso.creadoPor)
             arreglo.put(fila)
         }
         return arreglo.toString()
+    }
+
+    // ---------- Personas (para las iniciales) ----------
+
+    fun guardarPersonas(contexto: Context, personas: List<Persona>) {
+        val arreglo = JSONArray()
+        for (p in personas) arreglo.put(JSONObject().put("correo", p.correo).put("nombre", p.nombre))
+        Sesion.prefs(contexto).edit().putString(PERSONAS, arreglo.toString()).apply()
+    }
+
+    fun personas(contexto: Context): List<Persona> {
+        val texto = Sesion.prefs(contexto).getString(PERSONAS, null) ?: return emptyList()
+        return try {
+            val arreglo = JSONArray(texto)
+            val personas = ArrayList<Persona>(arreglo.length())
+            for (i in 0 until arreglo.length()) {
+                val fila = arreglo.optJSONObject(i) ?: continue
+                personas.add(Persona(fila.optString("correo"), fila.optString("nombre")))
+            }
+            personas
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     // ---------- Marcados como hechos desde el widget ----------

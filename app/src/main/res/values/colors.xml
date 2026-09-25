@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="fondo_widget">#F7FFFFFF</color>
-    <color name="texto">#1C1E21</color>
-    <color name="suave">#7A8088</color>
-    <color name="rojo">#C0392B</color>
-    <color name="ambar">#B45309</color>
-    <color name="azul">#2F6FED</color>
+    <!-- Estilo "Cálido", el mismo de la app: crema, coral y salvia -->
+    <color name="fondo_widget">#FBF5EE</color>
+    <color name="tarjeta">#FFFDF9</color>
+    <color name="borde">#EFE2D4</color>
+    <color name="borde_check">#CDB8A6</color>
+    <color name="texto">#3B2F2A</color>
+    <color name="suave">#9B8B80</color>
+    <color name="acento">#FF7A59</color>
+    <color name="acento_boton">#E8603A</color>
+    <color name="sobre_acento">#FFFFFF</color>
+    <color name="salvia">#7FB685</color>
+    <color name="salvia_fondo">#E3F1E2</color>
+
+    <!-- Etiquetas de fecha -->
+    <color name="chip_hoy_fondo">#FFE1D7</color>
+    <color name="chip_hoy_texto">#A8391A</color>
+    <color name="chip_pronto_fondo">#FDECCC</color>
+    <color name="chip_pronto_texto">#8A5A0C</color>
+    <color name="chip_normal_fondo">#F3E8DC</color>
+    <color name="chip_normal_texto">#6B5A4E</color>
+
+    <!-- Iniciales de cada persona: mismo orden y colores que en la app -->
+    <color name="p0_fondo">#DCEFDC</color>
+    <color name="p0_texto">#2F6B36</color>
+    <color name="p1_fondo">#FFE1D7</color>
+    <color name="p1_texto">#A8391A</color>
+    <color name="p2_fondo">#FDECCC</color>
+    <color name="p2_texto">#8A5A0C</color>
+    <color name="p3_fondo">#E9E3F7</color>
+    <color name="p3_texto">#54408F</color>
+    <color name="px_fondo">#F3E8DC</color>
+    <color name="px_texto">#9B8B80</color>
+
+    <!-- Fondo del ícono de la app: fijo, no cambia con el modo oscuro -->
+    <color name="icono_fondo">#FF7A59</color>
 </resources>

@@ -23,8 +23,13 @@ data class Aviso(
     val texto: String,
     val nota: String?,
     val prioridad: Boolean,
-    val vence: String?
+    val vence: String?,
+    /** Correo de quien lo anotó (lo fija el servidor). */
+    val creadoPor: String? = null
 )
+
+/** Una de las personas que comparten la lista. */
+data class Persona(val correo: String, val nombre: String)
 
 object Api {
     private const val MARGEN_RENOVACION = 5 * 60 * 1000L
@@ -154,7 +159,7 @@ object Api {
     fun avisosPendientes(contexto: Context): List<Aviso> {
         val token = tokenValido(contexto)
         val url = Config.SUPABASE_URL + "/rest/v1/avisos" +
-            "?select=id,texto,nota,prioridad,vence" +
+            "?select=id,texto,nota,prioridad,vence,creado_por" +
             "&completado_en=is.null" +
             "&order=prioridad.desc,vence.asc.nullslast,creado_en.asc" +
             "&limit=50"
@@ -175,11 +180,37 @@ object Api {
                     texto = fila.optString("texto"),
                     nota = textoOpcional(fila, "nota"),
                     prioridad = fila.optBoolean("prioridad", false),
-                    vence = textoOpcional(fila, "vence")
+                    vence = textoOpcional(fila, "vence"),
+                    creadoPor = textoOpcional(fila, "creado_por")
                 )
             )
         }
         return avisos
+    }
+
+    /** Quiénes comparten la lista, en el mismo orden que usa la app para los colores. */
+    fun personas(contexto: Context): List<Persona> {
+        val token = tokenValido(contexto)
+        val (codigo, respuesta) = pedir(
+            "${Config.SUPABASE_URL}/rest/v1/personas?select=correo,nombre&order=creado_en.asc",
+            "GET",
+            token = token
+        )
+        revisarRespuesta(codigo)
+
+        val arreglo = try {
+            JSONArray(respuesta)
+        } catch (e: Exception) {
+            throw ErrorRed("Respuesta inesperada del servidor")
+        }
+        val personas = ArrayList<Persona>(arreglo.length())
+        for (i in 0 until arreglo.length()) {
+            val fila = arreglo.optJSONObject(i) ?: continue
+            val correo = fila.optString("correo").lowercase()
+            if (correo.isBlank()) continue
+            personas.add(Persona(correo, fila.optString("nombre")))
+        }
+        return personas
     }
 
     /** Marca un aviso como hecho (pasa al historial de la app). */

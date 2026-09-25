@@ -1,8 +1,10 @@
 # 📌 Avisos Widget
 
 Widget de Android que muestra los pendientes de la app
-[app-avisos](https://github.com/Pvicen/app-avisos) directamente en la pantalla de inicio:
-texto, notas, prioridades (⚑) y fechas de vencimiento, con botón de actualizar.
+[app-avisos](https://github.com/Pvicen/app-avisos) directamente en la pantalla de inicio,
+con el mismo estilo "Cálido" de la app (crema, coral y salvia, esquinas redondeadas y modo
+oscuro): texto, notas, fechas de vencimiento como etiquetas de color, una franja coral en los
+importantes y, si la lista la comparten varias personas, la inicial de quién anotó cada aviso.
 
 Desde el propio widget se puede:
 
@@ -36,8 +38,8 @@ poner notas, prioridades o fechas se sigue usando la app.
 ## Compilación
 
 No hace falta instalar nada: GitHub Actions compila el APK en la nube
-(workflow [`apk.yml`](.github/workflows/apk.yml)) y lo publica como release en cada push
-propio a `main`. Los commits que hace el propio Actions no disparan workflows, por eso
+(workflow [`apk.yml`](.github/workflows/apk.yml)) en cualquier rama, y solo lo publica como
+release en los push a `main`. Los commits que hace el propio Actions no disparan workflows, por eso
 `keystore.yml` lanza `apk.yml` explícitamente al terminar.
 
 El `versionCode` sale del número de compilación de Actions, así que cada APK publicado es

@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.view.View
 import android.widget.RemoteViews
 
 class AvisosWidget : AppWidgetProvider() {
@@ -55,20 +56,28 @@ class AvisosWidget : AppWidgetProvider() {
             vistas.setRemoteAdapter(R.id.lista, intentServicio)
             vistas.setEmptyView(R.id.lista, R.id.vacio)
 
-            // Encabezado
+            // Encabezado: "3 pendientes · 14:32"
             val error = Cache.error(context)
             val actualizado = Cache.actualizado(context)
             val cantidad = Cache.leerAvisos(context).size
             val estado = when {
-                !haySesion -> "toca para entrar"
-                error != null -> error
-                actualizado == 0L -> "actualizando…"
-                else -> "$cantidad · " + Fechas.hora(actualizado)
+                !haySesion -> "Toca para entrar"
+                error != null -> error.replaceFirstChar { it.titlecase() }
+                actualizado == 0L -> "Actualizando…"
+                else -> Fechas.pendientes(cantidad) + " · " + Fechas.hora(actualizado)
             }
             vistas.setTextViewText(R.id.estado, estado)
-            vistas.setTextViewText(
-                R.id.vacio,
-                if (haySesion) "Sin pendientes 🎉" else "Toca para iniciar sesión"
+
+            // Lista vacía: "Todo al día" con el check verde (o cómo entrar)
+            val textoVacio = when {
+                !haySesion -> "Toca para iniciar sesión"
+                actualizado == 0L -> "Cargando…"
+                else -> "Todo al día"
+            }
+            vistas.setTextViewText(R.id.vacio_texto, textoVacio)
+            vistas.setViewVisibility(
+                R.id.vacio_icono,
+                if (haySesion && actualizado != 0L) View.VISIBLE else View.GONE
             )
 
             // Botón de refrescar

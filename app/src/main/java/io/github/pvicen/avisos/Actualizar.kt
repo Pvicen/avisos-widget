@@ -29,6 +29,12 @@ object Actualizar {
             val avisos = Api.avisosPendientes(app)
             Cache.guardarAvisos(app, avisos)
             cantidad = avisos.size
+            // Los nombres son un extra: si fallan, se pinta con los de la última vez
+            try {
+                Cache.guardarPersonas(app, Api.personas(app))
+            } catch (e: Exception) {
+                // sin nombres nuevos por esta vez
+            }
         } catch (e: ErrorSesion) {
             Sesion.limpiar(app)
             Cache.guardarError(app, "toca para entrar")

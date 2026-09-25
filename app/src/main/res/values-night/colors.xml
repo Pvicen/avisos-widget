@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="fondo_widget">#F21F2226</color>
-    <color name="texto">#E8EAED</color>
-    <color name="suave">#9AA0A6</color>
-    <color name="rojo">#E57368</color>
-    <color name="ambar">#F0A24B</color>
-    <color name="azul">#5B8DEF</color>
+    <!-- Estilo "Cálido" en modo oscuro -->
+    <color name="fondo_widget">#1B1613</color>
+    <color name="tarjeta">#262019</color>
+    <color name="borde">#3A3029</color>
+    <color name="borde_check">#6A574A</color>
+    <color name="texto">#F4EBE2</color>
+    <color name="suave">#B3A497</color>
+    <color name="acento">#FF8A6A</color>
+    <color name="acento_boton">#FF8A6A</color>
+    <color name="sobre_acento">#2A120A</color>
+    <color name="salvia">#8FC596</color>
+    <color name="salvia_fondo">#24372A</color>
+
+    <color name="chip_hoy_fondo">#4A2319</color>
+    <color name="chip_hoy_texto">#FFB59F</color>
+    <color name="chip_pronto_fondo">#45341A</color>
+    <color name="chip_pronto_texto">#F5CF85</color>
+    <color name="chip_normal_fondo">#332A24</color>
+    <color name="chip_normal_texto">#CDBDB0</color>
+
+    <color name="p0_fondo">#25402A</color>
+    <color name="p0_texto">#A9DCAE</color>
+    <color name="p1_fondo">#4A2319</color>
+    <color name="p1_texto">#FFB59F</color>
+    <color name="p2_fondo">#45341A</color>
+    <color name="p2_texto">#F5CF85</color>
+    <color name="p3_fondo">#342A4F</color>
+    <color name="p3_texto">#CBBCF2</color>
+    <color name="px_fondo">#332A24</color>
+    <color name="px_texto">#B3A497</color>
 </resources>

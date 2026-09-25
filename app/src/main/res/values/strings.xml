@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Avisos Widget</string>
-    <string name="widget_titulo">📌 Avisos</string>
+    <string name="widget_titulo">Avisos</string>
     <string name="widget_desc">Tus pendientes en la pantalla de inicio</string>
     <string name="refrescar">Actualizar ahora</string>
     <string name="bandera">⚑</string>
@@ -26,8 +26,8 @@
     <string name="cerrando">Cerrando sesión…</string>
     <string name="sin_navegador">No se encontró una app para abrir la página de avisos.</string>
     <string name="sin_cifrado">⚠️ Este dispositivo no permitió usar su almacén seguro, así que la sesión se guarda sin cifrar en la carpeta privada de la app.</string>
-    <string name="widget_sin_datos">Aún sin datos</string>
-    <string name="widget_cargando">…</string>
+    <string name="widget_sin_datos">Todo al día</string>
+    <string name="widget_cargando">Tus pendientes</string>
 
     <string name="agregar_aviso">Agregar un aviso</string>
     <string name="marcar_hecho">Marcar como hecho</string>

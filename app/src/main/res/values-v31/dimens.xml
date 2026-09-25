@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+: el mismo redondeo que el sistema usa para todos los widgets -->
+    <dimen name="radio_widget">@android:dimen/system_app_widget_background_radius</dimen>
+</resources>
