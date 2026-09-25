@@ -21,7 +21,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # El paquete "tools" (el de siempre por defecto) ya no existe en las
+      # imágenes nuevas de GitHub y hace fallar el paso: solo platform-tools.
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
 
       - uses: gradle/actions/setup-gradle@v4
         with:
