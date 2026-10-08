@@ -3,6 +3,15 @@
 Errores o límites no críticos, anotados para no frenar el avance (método C.C.D. §3).
 Nada de esto es bloqueante ni pone en riesgo datos o seguridad.
 
+## Hora exacta (2026-10-08)
+
+- **«Hoy · 18:00» pasa a relleno (ya pasó) con retraso.** El widget solo se repinta al
+  actualizar (↻ o cada ~30 min), no en el minuto justo.
+- **Depende de la migración `2026-10-08-hora.sql` de app-avisos** (columna `hora`). Está
+  aplicada; sin ella, el widget no podría actualizar.
+- **Reloj del teléfono.** «Hoy» y «ya pasó» usan la zona del teléfono; la hora guardada es la
+  de España. Con el teléfono en otra zona horaria no cuadrarían.
+
 ## Diseño "Cálido" e iniciales (2026-09-25)
 
 - **Sin la letra Nunito.** Los widgets (RemoteViews) no cargan fuentes propias de forma

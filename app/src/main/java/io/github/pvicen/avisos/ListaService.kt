@@ -59,14 +59,15 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
             vistas.setTextViewText(R.id.nota, aviso.nota)
         }
 
-        val etiqueta = Fechas.etiqueta(aviso.vence)
+        val etiqueta = Fechas.etiqueta(aviso.vence, aviso.hora)
         if (etiqueta == null) {
             vistas.setViewVisibility(R.id.vence, View.GONE)
         } else {
             vistas.setViewVisibility(R.id.vence, View.VISIBLE)
             vistas.setTextViewText(R.id.vence, etiqueta.first)
             val (fondo, color) = when (etiqueta.second) {
-                Fechas.VENCIDO -> R.drawable.chip_hoy to R.color.chip_hoy_texto
+                Fechas.VENCIDO -> R.drawable.chip_vencido to R.color.sobre_acento
+                Fechas.HOY -> R.drawable.chip_hoy to R.color.chip_hoy_texto
                 Fechas.PRONTO -> R.drawable.chip_pronto to R.color.chip_pronto_texto
                 else -> R.drawable.chip_normal to R.color.chip_normal_texto
             }
