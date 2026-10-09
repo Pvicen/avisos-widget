@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Etiqueta «Para …» de alguien que ya no está en personas -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/px_fondo" />
+    <corners android:radius="10dp" />
+</shape>

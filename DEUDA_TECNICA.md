@@ -3,6 +3,13 @@
 Errores o límites no críticos, anotados para no frenar el avance (método C.C.D. §3).
 Nada de esto es bloqueante ni pone en riesgo datos o seguridad.
 
+## «Te toca a ti» (2026-10-09)
+
+- **Solo se ve, no se cambia.** El widget enseña «Para ti» / «Para Ana», pero pasar un aviso a
+  alguien se hace desde la app.
+- **Depende de la migración `2026-10-09-te-toca.sql` de app-avisos** (columna `para`). Está
+  aplicada; sin ella, el widget no podría actualizar.
+
 ## Hora exacta (2026-10-08)
 
 - **«Hoy · 18:00» pasa a relleno (ya pasó) con retraso.** El widget solo se repinta al

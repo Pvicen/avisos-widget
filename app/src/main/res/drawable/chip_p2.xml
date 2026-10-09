@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Etiqueta «Para …» con el color de esa persona (como su inicial) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/p2_fondo" />
+    <corners android:radius="10dp" />
+</shape>

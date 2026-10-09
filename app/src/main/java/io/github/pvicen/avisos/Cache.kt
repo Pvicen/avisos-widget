@@ -54,7 +54,8 @@ object Cache {
                         prioridad = fila.optBoolean("prioridad", false),
                         vence = if (fila.isNull("vence")) null else fila.optString("vence"),
                         creadoPor = if (fila.isNull("creado_por")) null else fila.optString("creado_por"),
-                        hora = if (fila.isNull("hora")) null else fila.optString("hora")
+                        hora = if (fila.isNull("hora")) null else fila.optString("hora"),
+                        para = if (fila.isNull("para")) null else fila.optString("para")
                     )
                 )
             }
@@ -75,6 +76,7 @@ object Cache {
             if (aviso.vence != null) fila.put("vence", aviso.vence)
             if (aviso.creadoPor != null) fila.put("creado_por", aviso.creadoPor)
             if (aviso.hora != null) fila.put("hora", aviso.hora)
+            if (aviso.para != null) fila.put("para", aviso.para)
             arreglo.put(fila)
         }
         return arreglo.toString()

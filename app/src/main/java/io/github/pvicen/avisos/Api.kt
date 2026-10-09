@@ -27,7 +27,9 @@ data class Aviso(
     /** Correo de quien lo anotó (lo fija el servidor). */
     val creadoPor: String? = null,
     /** Hora de España "HH:MM:SS" (solo cuenta si hay fecha), o null. */
-    val hora: String? = null
+    val hora: String? = null,
+    /** «Te toca a ti»: correo de la persona a la que le toca, o null. */
+    val para: String? = null
 )
 
 /** Una de las personas que comparten la lista. */
@@ -161,7 +163,7 @@ object Api {
     fun avisosPendientes(contexto: Context): List<Aviso> {
         val token = tokenValido(contexto)
         val url = Config.SUPABASE_URL + "/rest/v1/avisos" +
-            "?select=id,texto,nota,prioridad,vence,hora,creado_por" +
+            "?select=id,texto,nota,prioridad,vence,hora,creado_por,para" +
             "&completado_en=is.null" +
             "&order=prioridad.desc,vence.asc.nullslast,hora.asc.nullslast,creado_en.asc" +
             "&limit=50"
@@ -184,7 +186,8 @@ object Api {
                     prioridad = fila.optBoolean("prioridad", false),
                     vence = textoOpcional(fila, "vence"),
                     creadoPor = textoOpcional(fila, "creado_por"),
-                    hora = textoOpcional(fila, "hora")
+                    hora = textoOpcional(fila, "hora"),
+                    para = textoOpcional(fila, "para")
                 )
             )
         }

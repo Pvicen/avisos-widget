@@ -75,6 +75,19 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
             colorDeTexto(vistas, R.id.vence, color)
         }
 
+        // «Te toca a ti»: para quién es, con el color de esa persona (como en la app)
+        val para = if (personas.size > 1) autorDe(aviso.para) else null
+        if (para == null) {
+            vistas.setViewVisibility(R.id.para, View.GONE)
+        } else {
+            val yo = Sesion.correo(contexto)?.lowercase()
+            val texto = if (aviso.para?.lowercase() == yo) "Para ti" else "Para " + para.nombre.substringBefore("@")
+            vistas.setViewVisibility(R.id.para, View.VISIBLE)
+            vistas.setTextViewText(R.id.para, texto)
+            vistas.setInt(R.id.para, "setBackgroundResource", FONDOS_CHIP[para.color])
+            colorDeTexto(vistas, R.id.para, TEXTOS_AVATAR[para.color])
+        }
+
         // Inicial de quien lo anotó (solo si la lista la comparten varias personas)
         val autor = if (personas.size > 1) autorDe(aviso.creadoPor) else null
         if (autor == null) {
@@ -140,6 +153,10 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
         val FONDOS_AVATAR = intArrayOf(
             R.drawable.avatar_p0, R.drawable.avatar_p1, R.drawable.avatar_p2,
             R.drawable.avatar_p3, R.drawable.avatar_px
+        )
+        val FONDOS_CHIP = intArrayOf(
+            R.drawable.chip_p0, R.drawable.chip_p1, R.drawable.chip_p2,
+            R.drawable.chip_p3, R.drawable.chip_px
         )
         val TEXTOS_AVATAR = intArrayOf(
             R.color.p0_texto, R.color.p1_texto, R.color.p2_texto,
