@@ -20,6 +20,7 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
 
     private var datos: List<Aviso> = emptyList()
     private var personas: List<Persona> = emptyList()
+    private var lugares: List<Lugar> = emptyList()
 
     override fun onCreate() {
         leer()
@@ -32,11 +33,13 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
     private fun leer() {
         datos = Cache.leerAvisos(contexto)
         personas = Cache.personas(contexto)
+        lugares = Cache.lugares(contexto)
     }
 
     override fun onDestroy() {
         datos = emptyList()
         personas = emptyList()
+        lugares = emptyList()
     }
 
     override fun getCount(): Int = datos.size
@@ -86,6 +89,15 @@ class ListaFactory(private val contexto: Context) : RemoteViewsService.RemoteVie
             vistas.setTextViewText(R.id.para, texto)
             vistas.setInt(R.id.para, "setBackgroundResource", FONDOS_CHIP[para.color])
             colorDeTexto(vistas, R.id.para, TEXTOS_AVATAR[para.color])
+        }
+
+        // Avisos por lugar: «📍 Súper»
+        val lugar = aviso.lugarId?.let { id -> lugares.find { it.id == id } }
+        if (lugar == null) {
+            vistas.setViewVisibility(R.id.lugar, View.GONE)
+        } else {
+            vistas.setViewVisibility(R.id.lugar, View.VISIBLE)
+            vistas.setTextViewText(R.id.lugar, "📍 " + lugar.nombre)
         }
 
         // Inicial de quien lo anotó (solo si la lista la comparten varias personas)
