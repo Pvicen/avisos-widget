@@ -63,4 +63,6 @@ dependencies {
     // HttpURLConnection no admite PATCH, que es lo que usa Supabase para
     // marcar un aviso como hecho.
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // Avisos por lugar: geovallas y la ubicación del momento («Guardar dónde estoy»)
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }

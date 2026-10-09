@@ -1,6 +1,7 @@
 package io.github.pvicen.avisos
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -8,8 +9,9 @@ import android.widget.EditText
 import android.widget.TextView
 
 /**
- * Única pantalla de la app: inicia la sesión que usa el widget y permite
- * refrescarlo o cerrar sesión. La app en sí se sigue usando desde el navegador.
+ * Pantalla principal de la app: inicia la sesión que usa el widget y permite
+ * refrescarlo, abrir los lugares (avisos al llegar) o cerrar sesión. La app en sí se
+ * sigue usando desde el navegador.
  */
 class LoginActivity : Activity() {
 
@@ -54,6 +56,10 @@ class LoginActivity : Activity() {
             }.start()
         }
 
+        findViewById<Button>(R.id.lugares).setOnClickListener {
+            startActivity(Intent(this, LugaresActivity::class.java))
+        }
+
         findViewById<Button>(R.id.salir).setOnClickListener {
             mensaje.text = getString(R.string.cerrando)
             Thread {
@@ -62,6 +68,7 @@ class LoginActivity : Activity() {
                 Api.cerrarSesionEnServidor(this@LoginActivity)
                 runOnUiThread {
                     Sesion.limpiar(this@LoginActivity)
+                    Geovallas.sincronizar(this@LoginActivity) // sin sesión, deja de vigilar lugares
                     AvisosWidget.refrescar(this@LoginActivity)
                     mensaje.text = getString(R.string.sesion_cerrada)
                     pintarEstado()

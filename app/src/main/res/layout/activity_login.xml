@@ -87,6 +87,12 @@
                 android:text="@string/actualizar" />
 
             <Button
+                android:id="@+id/lugares"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/abrir_lugares" />
+
+            <Button
                 android:id="@+id/salir"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

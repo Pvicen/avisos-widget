@@ -19,6 +19,7 @@ object Cache {
     private const val ERROR = "error"
     private const val EN_CAMINO = "en_camino"
     private const val PERSONAS = "personas"
+    private const val LUGARES = "lugares"
 
     /** Red de seguridad: nada queda oculto para siempre. */
     private const val VIDA_OCULTO = 24 * 60 * 60 * 1000L
@@ -55,7 +56,8 @@ object Cache {
                         vence = if (fila.isNull("vence")) null else fila.optString("vence"),
                         creadoPor = if (fila.isNull("creado_por")) null else fila.optString("creado_por"),
                         hora = if (fila.isNull("hora")) null else fila.optString("hora"),
-                        para = if (fila.isNull("para")) null else fila.optString("para")
+                        para = if (fila.isNull("para")) null else fila.optString("para"),
+                        lugarId = if (fila.isNull("lugar_id")) null else fila.optString("lugar_id")
                     )
                 )
             }
@@ -77,6 +79,7 @@ object Cache {
             if (aviso.creadoPor != null) fila.put("creado_por", aviso.creadoPor)
             if (aviso.hora != null) fila.put("hora", aviso.hora)
             if (aviso.para != null) fila.put("para", aviso.para)
+            if (aviso.lugarId != null) fila.put("lugar_id", aviso.lugarId)
             arreglo.put(fila)
         }
         return arreglo.toString()
@@ -100,6 +103,39 @@ object Cache {
                 personas.add(Persona(fila.optString("correo"), fila.optString("nombre")))
             }
             personas
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    // ---------- Lugares (para las geovallas y la etiqueta 📍) ----------
+
+    fun guardarLugares(contexto: Context, lugares: List<Lugar>) {
+        val arreglo = JSONArray()
+        for (l in lugares) {
+            arreglo.put(
+                JSONObject().put("id", l.id).put("nombre", l.nombre)
+                    .put("lat", l.lat).put("lon", l.lon).put("radio", l.radio)
+            )
+        }
+        Sesion.prefs(contexto).edit().putString(LUGARES, arreglo.toString()).apply()
+    }
+
+    fun lugares(contexto: Context): List<Lugar> {
+        val texto = Sesion.prefs(contexto).getString(LUGARES, null) ?: return emptyList()
+        return try {
+            val arreglo = JSONArray(texto)
+            val lugares = ArrayList<Lugar>(arreglo.length())
+            for (i in 0 until arreglo.length()) {
+                val fila = arreglo.optJSONObject(i) ?: continue
+                lugares.add(
+                    Lugar(
+                        fila.optString("id"), fila.optString("nombre"),
+                        fila.optDouble("lat"), fila.optDouble("lon"), fila.optInt("radio", 150)
+                    )
+                )
+            }
+            lugares
         } catch (e: Exception) {
             emptyList()
         }

@@ -29,11 +29,16 @@ object Actualizar {
             val avisos = Api.avisosPendientes(app)
             Cache.guardarAvisos(app, avisos)
             cantidad = avisos.size
-            // Los nombres son un extra: si fallan, se pinta con los de la última vez
+            // Los nombres y los lugares son un extra: si fallan, se usan los de la última vez
             try {
                 Cache.guardarPersonas(app, Api.personas(app))
             } catch (e: Exception) {
                 // sin nombres nuevos por esta vez
+            }
+            try {
+                Cache.guardarLugares(app, Api.lugares(app))
+            } catch (e: Exception) {
+                // sin lugares nuevos por esta vez
             }
         } catch (e: ErrorSesion) {
             Sesion.limpiar(app)
@@ -46,6 +51,8 @@ object Actualizar {
             pasajero = true
         }
 
+        // Vigila los lugares que tienen avisos pendientes (o ninguno, si ya no hay sesión)
+        Geovallas.sincronizar(app)
         AvisosWidget.refrescar(app)
         return Resultado(error, cantidad, pasajero)
     }

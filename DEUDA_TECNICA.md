@@ -3,6 +3,21 @@
 Errores o límites no críticos, anotados para no frenar el avance (método C.C.D. §3).
 Nada de esto es bloqueante ni pone en riesgo datos o seguridad.
 
+## Avisos por lugar (2026-10-10)
+
+- **Lista de hasta media hora de antigüedad.** Al llegar a un lugar se enseña lo que había en la
+  copia local (se actualiza cada ~30 min, con ↻ o al abrir la app); un aviso recién puesto en otro
+  dispositivo puede no salir todavía.
+- **«Una vez por visita» a la buena de Android.** Las zonas de 150 m pueden tardar unos minutos en
+  dispararse y fallar en interiores sin GPS. Si la salida se pierde, la visita caduca a las 12 h;
+  pasando más de 12 h seguidas en un lugar con avisos, puede volver a avisar.
+- **Las zonas se vuelven a poner al arrancar, al cambiar la lista y cada 6 h.** Si se apaga y
+  enciende la ubicación, puede pasar hasta una actualización sin vigilar.
+- **Sin mapa.** Los lugares se guardan estando allí («Guardar dónde estoy»); para moverlos, se
+  guarda otra vez con el mismo nombre.
+- **Solo en este Android.** El iPhone (la app web) no puede vigilar lugares.
+- **Probado solo compilando** hasta que se instale: no hay emulador en el flujo.
+
 ## «Te toca a ti» (2026-10-09)
 
 - **Solo se ve, no se cambia.** El widget enseña «Para ti» / «Para Ana», pero pasar un aviso a

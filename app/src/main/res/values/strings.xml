@@ -41,5 +41,18 @@
     <string name="aviso_agregado">Aviso agregado ✓</string>
     <string name="error_agregar">No se pudo guardar el aviso.</string>
 
+    <string name="lugares">Lugares</string>
+    <string name="abrir_lugares">Lugares (avisos al llegar)</string>
+    <string name="lugares_explicacion">Guarda los sitios donde quieres que te avise (el súper, casa…). En la app de avisos le pones un lugar a cada aviso y, al llegar, este teléfono te enseña lo pendiente de allí. Tu ubicación no sale del teléfono: solo se guardan los sitios.</string>
+    <string name="dar_permiso">Dar permiso</string>
+    <string name="permisos_ok">✓ Ubicación «todo el tiempo» y notificaciones: listo.</string>
+    <string name="falta_ubicacion">Falta el permiso de ubicación. Pulsa «Dar permiso» y elige «Mientras se usa la app» o «Precisa».</string>
+    <string name="falta_siempre">Falta que la ubicación sea «Permitir todo el tiempo» (si no, no puede avisarte con el teléfono bloqueado). Pulsa «Dar permiso» y elígelo en la pantalla que se abre.</string>
+    <string name="falta_notificaciones">Falta el permiso de notificaciones. Pulsa «Dar permiso».</string>
+    <string name="nombre_lugar">Nombre del sitio (p. ej. Súper)</string>
+    <string name="guardar_aqui">Guardar dónde estoy</string>
+    <string name="tus_lugares">Tus lugares</string>
+    <string name="sin_lugares">Aún no hay lugares guardados.</string>
+    <string name="borrar">Borrar</string>
     <string name="como_agregar">Para poner el widget: mantén presionada la pantalla de inicio, entra a Widgets, busca “Avisos” y arrástralo donde quieras. Se actualiza solo cada media hora y con el botón ↻ del widget.</string>
 </resources>

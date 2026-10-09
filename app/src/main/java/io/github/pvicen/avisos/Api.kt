@@ -29,11 +29,19 @@ data class Aviso(
     /** Hora de España "HH:MM:SS" (solo cuenta si hay fecha), o null. */
     val hora: String? = null,
     /** «Te toca a ti»: correo de la persona a la que le toca, o null. */
-    val para: String? = null
+    val para: String? = null,
+    /** Avisos por lugar: id del lugar, o null. */
+    val lugarId: String? = null
 )
 
 /** Una de las personas que comparten la lista. */
 data class Persona(val correo: String, val nombre: String)
+
+/** Un sitio guardado («Súper», «Casa»…) para los avisos por lugar. Radio en metros. */
+data class Lugar(val id: String, val nombre: String, val lat: Double, val lon: Double, val radio: Int)
+
+/** Ya hay un lugar con ese nombre (los nombres no se repiten). */
+class LugarRepetido(mensaje: String) : Exception(mensaje)
 
 object Api {
     private const val MARGEN_RENOVACION = 5 * 60 * 1000L
@@ -163,7 +171,7 @@ object Api {
     fun avisosPendientes(contexto: Context): List<Aviso> {
         val token = tokenValido(contexto)
         val url = Config.SUPABASE_URL + "/rest/v1/avisos" +
-            "?select=id,texto,nota,prioridad,vence,hora,creado_por,para" +
+            "?select=id,texto,nota,prioridad,vence,hora,creado_por,para,lugar_id" +
             "&completado_en=is.null" +
             "&order=prioridad.desc,vence.asc.nullslast,hora.asc.nullslast,creado_en.asc" +
             "&limit=50"
@@ -187,7 +195,8 @@ object Api {
                     vence = textoOpcional(fila, "vence"),
                     creadoPor = textoOpcional(fila, "creado_por"),
                     hora = textoOpcional(fila, "hora"),
-                    para = textoOpcional(fila, "para")
+                    para = textoOpcional(fila, "para"),
+                    lugarId = textoOpcional(fila, "lugar_id")
                 )
             )
         }
@@ -257,6 +266,76 @@ object Api {
             0
         }
         if (creados == 0) throw ErrorRed("El aviso no se guardó. Inténtalo de nuevo.")
+    }
+
+    // ---------- Lugares (migración 2026-10-10-lugares.sql de app-avisos) ----------
+
+    fun lugares(contexto: Context): List<Lugar> {
+        val token = tokenValido(contexto)
+        val (codigo, respuesta) = pedir(
+            "${Config.SUPABASE_URL}/rest/v1/lugares?select=id,nombre,lat,lon,radio&order=nombre.asc",
+            "GET",
+            token = token
+        )
+        revisarRespuesta(codigo)
+        val arreglo = try {
+            JSONArray(respuesta)
+        } catch (e: Exception) {
+            throw ErrorRed("Respuesta inesperada del servidor")
+        }
+        val lugares = ArrayList<Lugar>(arreglo.length())
+        for (i in 0 until arreglo.length()) {
+            val fila = arreglo.optJSONObject(i) ?: continue
+            lugares.add(
+                Lugar(
+                    id = fila.optString("id"),
+                    nombre = fila.optString("nombre"),
+                    lat = fila.optDouble("lat"),
+                    lon = fila.optDouble("lon"),
+                    radio = fila.optInt("radio", 150)
+                )
+            )
+        }
+        return lugares
+    }
+
+    /** Guarda un lugar nuevo en ese punto. Si el nombre ya existe, lanza LugarRepetido. */
+    fun guardarLugar(contexto: Context, nombre: String, lat: Double, lon: Double) {
+        val token = tokenValido(contexto)
+        val (codigo, _) = pedir(
+            "${Config.SUPABASE_URL}/rest/v1/lugares",
+            "POST",
+            JSONObject().put("nombre", nombre).put("lat", lat).put("lon", lon).toString(),
+            token,
+            "return=minimal"
+        )
+        if (codigo == 409) throw LugarRepetido("Ya hay un lugar llamado «$nombre».")
+        revisarRespuesta(codigo)
+    }
+
+    /** Mueve un lugar que ya existe a otro punto. */
+    fun moverLugar(contexto: Context, id: String, lat: Double, lon: Double) {
+        val token = tokenValido(contexto)
+        val (codigo, _) = pedir(
+            "${Config.SUPABASE_URL}/rest/v1/lugares?id=eq.$id",
+            "PATCH",
+            JSONObject().put("lat", lat).put("lon", lon).toString(),
+            token,
+            "return=minimal"
+        )
+        revisarRespuesta(codigo)
+    }
+
+    /** Borra un lugar; sus avisos se quedan, sin lugar. */
+    fun borrarLugar(contexto: Context, id: String) {
+        val token = tokenValido(contexto)
+        val (codigo, _) = pedir(
+            "${Config.SUPABASE_URL}/rest/v1/lugares?id=eq.$id",
+            "DELETE",
+            token = token,
+            prefer = "return=minimal"
+        )
+        revisarRespuesta(codigo)
     }
 
     private fun textoOpcional(fila: JSONObject, campo: String): String? {
