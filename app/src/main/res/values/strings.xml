@@ -54,5 +54,11 @@
     <string name="tus_lugares">Tus lugares</string>
     <string name="sin_lugares">Aún no hay lugares guardados.</string>
     <string name="borrar">Borrar</string>
+    <string name="compartir_lugar">Avisos: guardar lugar</string>
+    <string name="guardar_lugar">Guardar lugar</string>
+    <string name="buscando_punto">Buscando el punto en el enlace…</string>
+    <string name="que_hacer_alli">¿Qué quieres hacer allí? (opcional)</string>
+    <string name="guardar">Guardar</string>
+    <string name="como_agregar_lugar">También puedes buscar un sitio en Google Maps, pulsar Compartir y elegir «Avisos: guardar lugar».</string>
     <string name="como_agregar">Para poner el widget: mantén presionada la pantalla de inicio, entra a Widgets, busca “Avisos” y arrástralo donde quieras. Se actualiza solo cada media hora y con el botón ↻ del widget.</string>
 </resources>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Guardar un lugar compartido desde Google Maps (o Mundi), y si se quiere, un aviso para allí -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp"
+        android:text="@string/guardar_lugar"
+        android:textColor="@color/texto"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/punto_compartido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:text="@string/buscando_punto"
+        android:textColor="@color/suave"
+        android:textSize="13sp" />
+
+    <EditText
+        android:id="@+id/nombre_compartido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/nombre_lugar"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences"
+        android:maxLength="40" />
+
+    <EditText
+        android:id="@+id/aviso_compartido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/que_hacer_alli"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLength="500"
+        android:maxLines="3" />
+
+    <TextView
+        android:id="@+id/mensaje_compartido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingTop="10dp">
+
+        <Button
+            android:id="@+id/cancelar_compartido"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancelar" />
+
+        <Button
+            android:id="@+id/guardar_compartido"
+            style="@android:style/Widget.Material.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/guardar" />
+    </LinearLayout>
+</LinearLayout>

@@ -248,12 +248,14 @@ object Api {
      * Crea un aviso nuevo. El id viaja desde el cliente para que un reintento
      * no cree dos avisos iguales: el segundo choca con el mismo id.
      */
-    fun agregar(contexto: Context, id: String, texto: String) {
+    fun agregar(contexto: Context, id: String, texto: String, lugarId: String? = null) {
         val token = tokenValido(contexto)
+        val cuerpo = JSONObject().put("id", id).put("texto", texto)
+        if (lugarId != null) cuerpo.put("lugar_id", lugarId)
         val (codigo, respuesta) = pedir(
             "${Config.SUPABASE_URL}/rest/v1/avisos",
             "POST",
-            JSONObject().put("id", id).put("texto", texto).toString(),
+            cuerpo.toString(),
             token,
             "return=representation"
         )
@@ -299,18 +301,25 @@ object Api {
         return lugares
     }
 
-    /** Guarda un lugar nuevo en ese punto. Si el nombre ya existe, lanza LugarRepetido. */
-    fun guardarLugar(contexto: Context, nombre: String, lat: Double, lon: Double) {
+    /** Guarda un lugar nuevo en ese punto y devuelve su id. Si el nombre ya existe, lanza LugarRepetido. */
+    fun guardarLugar(contexto: Context, nombre: String, lat: Double, lon: Double): String {
         val token = tokenValido(contexto)
-        val (codigo, _) = pedir(
-            "${Config.SUPABASE_URL}/rest/v1/lugares",
+        val (codigo, respuesta) = pedir(
+            "${Config.SUPABASE_URL}/rest/v1/lugares?select=id",
             "POST",
             JSONObject().put("nombre", nombre).put("lat", lat).put("lon", lon).toString(),
             token,
-            "return=minimal"
+            "return=representation"
         )
         if (codigo == 409) throw LugarRepetido("Ya hay un lugar llamado «$nombre».")
         revisarRespuesta(codigo)
+        val id = try {
+            JSONArray(respuesta).optJSONObject(0)?.optString("id")
+        } catch (e: Exception) {
+            null
+        }
+        if (id.isNullOrBlank()) throw ErrorRed("El lugar no se guardó. Inténtalo de nuevo.")
+        return id
     }
 
     /** Mueve un lugar que ya existe a otro punto. */

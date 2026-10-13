@@ -3,6 +3,16 @@
 Errores o límites no críticos, anotados para no frenar el avance (método C.C.D. §3).
 Nada de esto es bloqueante ni pone en riesgo datos o seguridad.
 
+## Guardar lugar desde Google Maps o Mundi (2026-10-13)
+
+- **Depende del formato de los enlaces de Google.** El punto se saca del enlace (`!3d…!4d…`, `?q=`,
+  `@lat,lon`, `geo:`), siguiendo las redirecciones del enlace corto y la página de cookies; si Google
+  lo cambia, se recurre al Geocoder del teléfono con el nombre y la dirección, que es menos preciso.
+- **El enlace corto se abre desde el teléfono** para leer adónde lleva (Google ve esa consulta).
+- **«Avisos: guardar lugar» sale al compartir cualquier texto**, no solo desde mapas; sin punto, lo
+  dice y no deja guardar.
+- **Probado solo compilando** y con los patrones en una réplica; falta la prueba en el teléfono.
+
 ## Avisos por lugar (2026-10-10)
 
 - **Lista de hasta media hora de antigüedad.** Al llegar a un lugar se enseña lo que había en la

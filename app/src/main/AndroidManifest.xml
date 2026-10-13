@@ -64,6 +64,21 @@
             android:exported="false"
             android:label="@string/lugares" />
 
+        <!-- Compartir desde Google Maps (o un enlace de mapa desde otra app): guardar el lugar -->
+        <activity
+            android:name=".CompartirLugarActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/compartir_lugar"
+            android:taskAffinity=""
+            android:theme="@style/TemaDialogo">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
         <!-- Android avisa aquí al entrar o salir de un lugar (PendingIntent explícito) -->
         <receiver
             android:name=".LugarReceiver"

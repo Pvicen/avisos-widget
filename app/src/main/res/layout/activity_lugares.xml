@@ -60,6 +60,13 @@
             android:text="@string/guardar_aqui" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="@string/como_agregar_lugar"
+            android:textSize="13sp" />
+
+        <TextView
             android:id="@+id/mensaje_lugares"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
